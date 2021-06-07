@@ -4,9 +4,14 @@
  * and open the template in the editor.
  */
 package Perpustakaan.ui;
-
+import java.sql.*;
+import Perpustakaan.Helper.ConnectionHelper;
 import Perpustakaan.Manager.BukuManager;
 import Perpustakaan.Model.Buku;
+import com.sun.jdi.connect.spi.Connection;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -24,9 +29,10 @@ public class ShowBookJframe extends javax.swing.JFrame {
      */
     public ShowBookJframe() {
         initComponents();
-            setLocationRelativeTo(null);
-            initTableBook();
-            loadBook();
+        setLocationRelativeTo(null);
+        initTableBook();
+        loadBook();
+        validateExit();
     }
     public static DefaultTableModel tableModel;
         public static List<Buku> ListBuku;
@@ -64,8 +70,26 @@ public class ShowBookJframe extends javax.swing.JFrame {
                 });
             });
         }
-
-    
+        
+    private void validateExit() {
+        ShowBookJframe.this.addWindowListener (new WindowAdapter() {
+        @Override
+        public void windowClosing(WindowEvent e) {
+            if (JOptionPane.showConfirmDialog(ShowBookJframe.this,
+                    "Apakah Anda Yakin Ingin Keluar ?", "PERINGATAN",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) 
+                System.exit(0);
+            }
+        });    
+}
+    private void showMessage(String message, int type) {
+        if (type == 1) {
+            JOptionPane.showMessageDialog(this, message, "sukses", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -143,7 +167,15 @@ public class ShowBookJframe extends javax.swing.JFrame {
             new String [] {
                 "ID", "Judul Buku", "Pengarang", "Penerbit", "Tahun Terbit"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
         jScrollPane3.setViewportView(bookTable);
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
@@ -235,11 +267,27 @@ public class ShowBookJframe extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
-
+       int selectedRow = bookTable.getSelectedRow();
+       if (selectedRow == -1) {
+           showMessage ("Pilih Baris dulu!", 2);
+       } else {
+           try {
+           
+                Buku buku = ListBuku.get(selectedRow);
+                ShowBookJframe.this.dispose();
+                new AddBookJFrame("Update Buku", buku.getId_buku()).setVisible(true);
+           } catch (Exception e) {
+               System.out.println("Error:" + e.getMessage());
+               
+           }
+          
+       }
     }//GEN-LAST:event_updateBtnActionPerformed
 
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-
+        //showMessage ("Tombol dapat di klik", 1);
+        new AddBookJFrame().setVisible(true);
+        ShowBookJframe.this.dispose();        
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void refreshBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshBtnActionPerformed
@@ -249,6 +297,28 @@ public class ShowBookJframe extends javax.swing.JFrame {
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
         // TODO add your handling code here:
+        int selectedRow = bookTable.getSelectedRow();
+        if (selectedRow == -1) {
+            showMessage("Pilih Baris Dulu!", 2);
+        }else {
+            int option = JOptionPane.showConfirmDialog(this, "Apakah Anda Yakin Ingin Menghapus Data Ini ?", "HAPUS DATA", JOptionPane.WARNING_MESSAGE);
+            if (option == JOptionPane.YES_OPTION) {
+                try{
+                
+                  java.sql.Connection con = ConnectionHelper.getConnection();
+                  Statement stm = con.createStatement();
+                  Buku buku = ListBuku.get(selectedRow);
+                  stm.executeUpdate("DELETE FROM buku WHERE id_buku = " + buku.getId_buku());
+                  loadBook();
+                  
+                } catch (Exception e) {
+               
+                    System.out.println("Error" + e.getMessage());
+                    
+                }
+            }
+        }
+   
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     /**
@@ -302,3 +372,10 @@ public class ShowBookJframe extends javax.swing.JFrame {
     private javax.swing.JButton updateBtn;
     // End of variables declaration//GEN-END:variables
 }
+        
+
+
+
+
+    
+

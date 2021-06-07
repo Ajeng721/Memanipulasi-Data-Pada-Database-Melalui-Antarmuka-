@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Perpus.Helper;
+package Perpustakaan.Helper;
 
 import com.mysql.cj.jdbc.Driver;
 import java.sql.Connection;

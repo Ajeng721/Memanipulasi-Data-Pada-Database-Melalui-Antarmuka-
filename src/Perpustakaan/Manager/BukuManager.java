@@ -5,9 +5,9 @@
  */
 package Perpustakaan.Manager;
 
-import Perpus.Helper.CheckConnection;
-import static Perpus.Helper.CheckConnection.showBook;
-import Perpus.Helper.ConnectionHelper;
+import Perpustakaan.Helper.CheckConnection;
+import static Perpustakaan.Helper.CheckConnection.showBook;
+import Perpustakaan.Helper.ConnectionHelper;
 import Perpustakaan.Model.Buku;
 import java.sql.Connection;
 import java.sql.ResultSet;
