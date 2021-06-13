@@ -52,12 +52,58 @@ public class BukuManager {
         Logger.getLogger(CheckConnection.class.getName()).log(Level.SEVERE, null, ex);
         
        }
-           return bukulist;           
+           return bukulist;  
+      }
+           
+    public static Buku showBook (int id) throws SQLException {
+         Connection conn = ConnectionHelper.getConnection();
+         Buku buku = new Buku ();
+         
+         var pstmn = conn.prepareStatement("Select * from buke Where id_buku = ?");
+         pstmn.setInt(1, id);
+         ResultSet rs = pstmn.executeQuery();
+         
+         while (rs.next()) {
+             buku.setId_buku(Integer.parseInt(rs.getString("id+buku")));
+             buku.setPenerbit(rs.getString("judul_buku"));
+             buku.setPenerbit(rs.getString("penerbit"));
+             buku.setPengarang(rs.getString("pengarang"));
+             buku.setTahun_terbit(Integer.valueOf(rs.getString("tahun_terbit")));
+         }
+        return buku;
+               
+           }
+
+         
+public static void updateBook(Buku buku) throws SQLException {
+    Connection conn = ConnectionHelper.getConnection();
+    var pstmn = conn.prepareStatement("UPDATE buku SET judul_buku = ?, "
+             + "pengarang = ?, penerbit = ?, tahun_terbit = ? WHERE id_buku = ?");
+    pstmn.setString(1, buku.getJudul_buku());
+    pstmn.setString(2, buku.getPengarang());
+    pstmn.setString(3, buku.getPenerbit());
+    pstmn.setInt(4, buku.getTahun_terbit());
+    pstmn.setInt(5, buku.getId_buku());
+    pstmn.execute();
+
+    }
+
+ 
+public static void insertBook(Buku buku) throws SQLException {
+    Connection conn = ConnectionHelper.getConnection();
+    var pstmn = conn.prepareStatement("insert into buku (judul_buku, "
+             + "pengarang, penerbit, tahun_terbit) values (?, ?, ?, ?)");
+    pstmn.setString(1, buku.getJudul_buku());
+    pstmn.setString(2, buku.getPengarang());
+    pstmn.setString(3, buku.getPenerbit());
+    pstmn.setInt(4, buku.getTahun_terbit());
+    pstmn.execute();
 }
-      
+}
+
     
      
- }
+ 
          
          
 

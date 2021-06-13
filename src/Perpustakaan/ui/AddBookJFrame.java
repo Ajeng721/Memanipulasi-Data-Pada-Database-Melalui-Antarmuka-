@@ -13,8 +13,10 @@ import java.awt.event.WindowEvent;
 import javax.swing.JOptionPane;
 import Perpustakaan.Model.Buku;
 import Perpustakaan.Helper.ConnectionHelper;
+import Perpustakaan.Manager.BukuManager;
 import Perpustakaan.Model.Buku;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author ajengnur
@@ -34,6 +36,7 @@ public class AddBookJFrame extends javax.swing.JFrame {
     public AddBookJFrame(String title, int id) {
        
         initComponents();
+        setLocationRelativeTo (null);
         addBookLable.setText("Update buku");
         formTitle = title;
         bukuId = id;
@@ -121,16 +124,69 @@ public class AddBookJFrame extends javax.swing.JFrame {
     public void getPenerbitRadBtn(){
         if (jbrPustakaRadBtn.isSelected()){
             penerbit = "Jember Pustaka";
+            jbrPustakaRadBtn.setSelected(true);
         }else if (gramediaRadBtn.isSelected()){
             penerbit = "Gramedia";
+            gramediaRadBtn.setSelected(true);
         }else if (polijePressRadBtn.isSelected()){
             penerbit = "Polije Press";
+            polijePressRadBtn.setSelected(true);
         }else if (rriLibRadBtn.isSelected()) {
             penerbit = "RRI Library";
+            rriLibRadBtn.setSelected(true);
                                             
         }
     }
     
+    //untuk memberikan validasi input
+private boolean validateInput() throws SQLException {
+    boolean isCompleted = false;
+    
+    Buku buku = new Buku();
+    
+    if (bookTitleField.getText().isEmpty()) {
+        isCompleted = false;
+        bookTitleField.requestFocus();
+    } else {
+        buku.setJudul_buku(bookTitleField.getText());
+        isCompleted = true ;
+    }
+    if (bookAuthorField.getText().isEmpty()) {
+        isCompleted = false;
+        bookAuthorField.requestFocus();
+    }else {
+        buku.setPengarang(bookAuthorField.getText());
+        isCompleted = true;
+    }
+    
+    //untuk memberi validasi input di radio button
+    if (jbrPustakaRadBtn.isSelected()) {
+        buku.setPenerbit(jbrPustakaRadBtn.getText());
+        isCompleted = true;
+    } else if (gramediaRadBtn.isSelected()) {
+        buku.setPenerbit(gramediaRadBtn.getText());
+        isCompleted = true;    
+    } else if (polijePressRadBtn.isSelected()) {
+        buku.setPenerbit(polijePressRadBtn.getText());
+        isCompleted = true;
+    } else if (rriLibRadBtn.isSelected()) {
+        buku.setPenerbit(rriLibRadBtn.getText());
+        isCompleted = true;
+    } else {
+        isCompleted = false;
+    }
+    buku.setTahun_terbit(Integer.parseInt(thnTerbitComboBox.getSelectedItem().toString()));
+    
+    if (formTitle.equalsIgnoreCase("Update Buku")) {
+        buku.setId_buku(bukuId);
+    }    
+    bukuGlobal = buku;
+    
+    
+    return false;
+
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -327,7 +383,8 @@ public class AddBookJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_thnTerbitComboBoxActionPerformed
 
     private void submitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitBtnActionPerformed
-        if (bukuId == 0){
+        
+      if (bukuId == 0){
             addBook();
         }else {
             updateBook(bukuId);
@@ -335,7 +392,8 @@ public class AddBookJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_submitBtnActionPerformed
 
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
-        // TODO add your handling code here:
+        dispose();
+        
     }//GEN-LAST:event_cancelBtnActionPerformed
 
     private void gramediaRadBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gramediaRadBtnActionPerformed
